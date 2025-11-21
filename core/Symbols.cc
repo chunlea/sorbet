@@ -2674,9 +2674,15 @@ void ClassOrModule::sortMembersStableOrder(const GlobalState &gs, std::vector<st
                 return false;
             }
             auto rhsLoc = rhsLocs[i];
-            auto compareLoc = lhsLoc.filePosToString(gs).compare(rhsLoc.filePosToString(gs));
-            if (compareLoc != 0) {
-                return compareLoc < 0;
+            // Compare file, beginPos, endPos directly to avoid string allocations
+            if (lhsLoc.file() != rhsLoc.file()) {
+                return lhsLoc.file().id() < rhsLoc.file().id();
+            }
+            if (lhsLoc.beginPos() != rhsLoc.beginPos()) {
+                return lhsLoc.beginPos() < rhsLoc.beginPos();
+            }
+            if (lhsLoc.endPos() != rhsLoc.endPos()) {
+                return lhsLoc.endPos() < rhsLoc.endPos();
             }
         }
         if (i < rhsLocs.size()) {
