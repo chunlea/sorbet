@@ -1,0 +1,27 @@
+# Sorbet Optimized Configuration
+# Copy this to your project's sorbet/config file for optimized performance
+#
+# Usage: sorbet --config=sorbet/config .
+#
+# These settings are recommended for large codebases to reduce memory usage
+# and improve type checking speed.
+
+# Enable disk caching (replace with your preferred cache directory)
+--cache-dir=.sorbet-cache
+
+# Pre-allocate symbol tables for large codebases (adjust based on your codebase size)
+# Run `sorbet --counters .` to see actual counts and tune these values
+--reserve-class-table-capacity=16384
+--reserve-method-table-capacity=65536
+--reserve-field-table-capacity=8192
+--reserve-type-parameter-table-capacity=512
+--reserve-type-member-table-capacity=8192
+--reserve-utf8-name-table-capacity=32768
+--reserve-constant-name-table-capacity=8192
+--reserve-unique-name-table-capacity=8192
+
+# Use multiple threads (0 = auto-detect, reduce for memory-constrained environments)
+--threads=0
+
+# Limit error reporting to prevent excessive memory usage
+# --error-cap=1000

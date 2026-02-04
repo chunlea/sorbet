@@ -2077,6 +2077,10 @@ SymbolRef ClassOrModule::dealias(const GlobalState &gs, int depthLimit) const {
 }
 // if dealiasing fails here, then we return a bad alias method stub instead
 MethodRef Method::dealiasMethod(const GlobalState &gs, int depthLimit) const {
+    // Performance optimization: if we know this method is not an alias, skip the dealiasing check entirely
+    if (flags.isNotAlias) {
+        return this->ref(gs);
+    }
     return dealiasWithDefault(gs, this->ref(gs), depthLimit, core::Symbols::Sorbet_Private_Static_badAliasMethodStub())
         .asMethodRef();
 }

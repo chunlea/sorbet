@@ -83,13 +83,17 @@ public:
         bool allowIncompatibleOverrideAll : 1;
         bool allowIncompatibleOverrideVisibility : 1;
         bool isPackagePrivate : 1;
+        // Performance optimization: set to true if this method is known to NOT be an alias
+        // This allows skipping the dealiasMethod check in hot paths
+        bool isNotAlias : 1;
 
-        constexpr static uint16_t NUMBER_OF_FLAGS = 12;
+        constexpr static uint16_t NUMBER_OF_FLAGS = 13;
         constexpr static uint16_t VALID_BITS_MASK = (1 << NUMBER_OF_FLAGS) - 1;
         Flags() noexcept
             : isRewriterSynthesized(false), isProtected(false), isPrivate(false), isOverloaded(false),
               isAbstract(false), isGenericMethod(false), isOverridable(false), isFinal(false), isOverride(false),
-              allowIncompatibleOverrideAll(false), allowIncompatibleOverrideVisibility(false), isPackagePrivate(false) {
+              allowIncompatibleOverrideAll(false), allowIncompatibleOverrideVisibility(false), isPackagePrivate(false),
+              isNotAlias(false) {
         }
 
         uint16_t serialize() const {
@@ -156,6 +160,12 @@ public:
 
     // if dealiasing fails here, then we return a bad alias method stub instead
     MethodRef dealiasMethod(const GlobalState &gs, int depthLimit = 42) const;
+
+    // Fast path: returns true if this method is definitely not an alias
+    // When this returns true, dealiasMethod() is guaranteed to return this method's ref
+    inline bool isDefinitelyNotAlias() const {
+        return flags.isNotAlias;
+    }
 
     // TODO(dmitry) perf: most calls to this method could be eliminated as part of perf work.
     MethodRef ref(const GlobalState &gs) const;

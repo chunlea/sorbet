@@ -311,3 +311,38 @@ common:ci --color yes
 
 # enables a lot of features in mac instruments profiler
 build:instruments --linkopt=-framework --linkopt=CoreFoundation
+
+##
+## Performance-optimized configuration
+## Use this for maximum type-checking speed
+##
+build:perf --config=release-common
+build:perf --copt=-O3
+build:perf --copt=-DNDEBUG
+build:perf --copt=-march=native
+build:perf --linkopt=-O3
+# Aggressive inlining for better performance
+build:perf --copt=-finline-functions
+build:perf --copt=-funroll-loops
+# Profile-guided optimization preparation
+build:perf --copt=-fprofile-instr-generate
+build:perf --linkopt=-fprofile-instr-generate
+
+# Performance config without PGO (for when you just want fast builds)
+build:perf-fast --config=release-common
+build:perf-fast --copt=-O3
+build:perf-fast --copt=-DNDEBUG
+build:perf-fast --copt=-march=native
+build:perf-fast --linkopt=-O3
+build:perf-fast --copt=-finline-functions
+build:perf-fast --copt=-funroll-loops
+build:perf-fast --config=lto
+
+# Memory-optimized configuration
+# Trades some speed for lower memory usage
+build:low-memory --config=release-common
+build:low-memory --copt=-Os
+build:low-memory --linkopt=-Os
+build:low-memory --copt=-DNDEBUG
+# Skip slow enforcements for faster builds with lower overhead
+build:low-memory --config=skipslowenforce

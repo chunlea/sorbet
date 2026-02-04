@@ -3335,6 +3335,9 @@ private:
         bool seenOptional = false;
 
         methodInfo->resultType = sig.returns;
+        // Performance optimization: methods with explicit signatures are never aliases
+        // This allows us to skip the dealiasMethod check in hot paths
+        methodInfo->flags.isNotAlias = true;
         int i = -1;
         for (auto &param : methodInfo->parameters) {
             ++i;
